@@ -1,0 +1,11 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
+
+import os
+
+
+UWSGI_VIRTUALENV  = os.environ['VIRTUAL_ENV']
+UWSGI_EMPEROR = os.path.join(UWSGI_VIRTUALENV, 'etc/uwsgi/vassals')
+UWSGI_PY-AUTO-RELOAD  = true
+
