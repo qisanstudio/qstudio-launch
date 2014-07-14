@@ -1,3 +1,6 @@
 # -*- code: utf-8 -*-
-from __future__ import unicode_literals
+from .basic import CommonConfig
 
+common = CommonConfig()
+
+__all__ = ['common']

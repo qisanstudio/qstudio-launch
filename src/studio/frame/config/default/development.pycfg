@@ -8,4 +8,6 @@ import os
 UWSGI_VIRTUALENV  = os.environ['VIRTUAL_ENV']
 UWSGI_EMPEROR = os.path.join(UWSGI_VIRTUALENV, 'etc/uwsgi/vassals')
 UWSGI_PY_AUTO_RELOAD  = True
+UWSGI_PIDFILE = os.path.join(UWSGI_VIRTUALENV, 'tmp/studio.pid')
+UWSGI_LOGFILE = os.path.join(UWSGI_VIRTUALENV, 'var/log/uwsgi/access.log')
 
