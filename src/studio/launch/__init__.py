@@ -2,5 +2,8 @@
 from __future__ import unicode_literals
 import os
 
+from base import main, manager
 
-ROOT = os.path.abspath(os.path.dirname(__file__))
+__all__ = ['main', 'manager']
+
+ROOT_PATH = os.path.split(os.path.realpath(__file__))[0]
