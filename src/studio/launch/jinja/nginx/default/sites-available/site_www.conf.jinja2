@@ -1,0 +1,12 @@
+server {
+
+    listen 15000;
+
+    server_name www.dev.guokr.com dev.guokr.com;
+
+    location "/microsite" {
+        include uwsgi_params;
+        uwsgi_pass app_microsite;
+    }
+
+}

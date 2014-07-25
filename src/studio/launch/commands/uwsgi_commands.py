@@ -55,4 +55,3 @@ def start():
     else:
         _uwsgi_common(daemonize=config.common['UWSGI_LOGFILE'])
         print(colored('uWSGI', 'green', attrs=['bold']) + '.')
-        

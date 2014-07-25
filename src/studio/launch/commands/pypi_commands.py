@@ -6,10 +6,10 @@ from termcolor import colored
 from studio.launch.base import manager
 from .contrib import build_structure
 
-app_manager = manager.subcommand('pypi')
+pypi_manager = manager.subcommand('pypi')
 
 
-@app_manager.command
+@pypi_manager.command
 def init(*appnames):
     print(colored('initializing app ...', 'green'))
     for appname in appnames:

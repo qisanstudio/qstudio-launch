@@ -13,6 +13,19 @@ JDIR = os.path.join(ROOT_PATH, 'jinja')
 JENV = Environment(loader=FileSystemLoader(JDIR))
 
 
+class cd(object):
+    """Context manager for changing the current working directory"""
+    def __init__(self, newPath):
+        self.newPath = newPath
+
+    def __enter__(self):
+        self.savedPath = os.getcwd()
+        os.chdir(self.newPath)
+
+    def __exit__(self, etype, value, traceback):
+        os.chdir(self.savedPath)
+
+
 def mkdirs(path):
     try:
         print(colored('create directory %s' % path, 'grey'))
@@ -27,18 +40,19 @@ def writefp(path, text):
         fp.write(text)
 
 
-def build_structure(dist, tpl='default', **kwargs):
-    TEMPLATE_DIR = os.path.join(JDIR, dist, tpl)
-    for root, dirs, files in os.walk(TEMPLATE_DIR):
-        reldir = os.path.relpath(root, start=JDIR)
-        relcurdir = os.path.relpath(root, start=TEMPLATE_DIR)
-        for dname in dirs:
-            dpath = Template(os.path.join(relcurdir, dname)).render(**kwargs)
-            mkdirs(dpath)
-        for fname in files:
-            fpath = Template(os.path.join(relcurdir, fname.rstrip('.jinja2'))).render(**kwargs)
-            text = JENV.get_template(os.path.join(reldir, fname)).render()
-            writefp(fpath, text)
+def build_structure(command, dist='.', tpl='default', **kwargs):
+    with cd(dist):
+        TEMPLATE_DIR = os.path.join(JDIR, command, tpl)
+        for root, dirs, files in os.walk(TEMPLATE_DIR):
+            reldir = os.path.relpath(root, start=JDIR)
+            relcurdir = os.path.relpath(root, start=TEMPLATE_DIR)
+            for dname in dirs:
+                dpath = Template(os.path.join(relcurdir, dname)).render(**kwargs)
+                mkdirs(dpath)
+            for fname in files:
+                fpath = Template(os.path.join(relcurdir, fname.rstrip('.jinja2'))).render(**kwargs)
+                text = JENV.get_template(os.path.join(reldir, fname)).render(**kwargs)
+                writefp(fpath, text)
 
 
 if __name__ == '__main__':

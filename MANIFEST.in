@@ -1,0 +1,5 @@
+recursive-include src *
+recursive-include requirements *
+recursive-include tests *
+include version.txt
+
