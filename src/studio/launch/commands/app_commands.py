@@ -5,15 +5,12 @@ from __future__ import print_function
 import os
 import sys
 import importlib
-
-from sh import uwsgi, ErrorReturnCode
+from sh import pip
 from termcolor import colored
 from studio.frame import config
 from studio.launch.base import manager
-from .contrib import build_structure
 
 app_manager = manager.subcommand('app')
-
 
 
 def _get_app(appname):
@@ -36,9 +33,34 @@ def _get_app(appname):
         return None
 
 
+def _iter_all():
+    for pkg in pip.freeze():
+        appname, _ = pkg.split('==')
+        if 'microsite' == appname:
+            yield appname
+
+
+def _get_pkgs():
+    return [str(pkg.split('==')[0]) for pkg in pip.freeze()]
+
+
+def _get_appnames():
+    pkgs = _get_pkgs()
+    return [pkg for pkg in pkgs if pkg.startswith('microsi')]
+    return [pkg[6:] for pkg in pkgs if pkg.startswith('qsapp-')]
+
+
+def _mk_uwsgi_config(config):
+    for k, v in config.items():
+        print(k, v)
+#        if k.startswith('UWSGI_'):
+#            print(k, v)
+
 
 @app_manager.command
 def add(*appnames):
+    _names = _get_appnames()
     for appname in appnames:
-        app = _get_app(appname)
-        print(app.config)
+        if appname in _names:
+            app = _get_app(appname)
+            _mk_uwsgi_config(app.config)

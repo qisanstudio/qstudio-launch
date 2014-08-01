@@ -11,12 +11,6 @@ except ImportError:
 import os
 import setuptools
 
-#cmdpath = 'src/guokr/dist/command/__init__.py'
-#command = {'__file__': cmdpath}
-#execfile(cmdpath, command)
-
-#COMMANDS = command['__all__']
-
 
 def strip_comments(l):
     return l.split('#', 1)[0].strip()

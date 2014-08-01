@@ -72,8 +72,22 @@ class Manager(ManagerMixins, Baker):
 manager = Manager()
 
 
+def load():
+    # 引入基本命令
+    from . import commands  # noqa
+
+    try:
+        # 自动引入 studio.launch 作为扩展
+        from studio import launch  # noqa
+    except ImportError:
+        pass
+#    # 通过 entry_points studio.manage_commands 引入更多扩展
+#    from pkg_resources import iter_entry_points
+#    for ep in iter_entry_points('studio.manage_commands'):
+#        ep.load()
+#
+
 def main():
     from . import commands
     manager.run()
-
 

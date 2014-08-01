@@ -5,7 +5,7 @@ from __future__ import print_function
 import os
 import sys
 import sh
-from sh import uwsgi, ErrorReturnCode
+from sh import ErrorReturnCode
 from StringIO import StringIO
 from termcolor import colored
 from studio.frame import config
@@ -21,6 +21,7 @@ def _init_nginx():
     mkdirs(CONF_DIR)
     mkdirs(os.path.join(config.common['NGINX_CHROOT'], 'var/lib/nginx/body'))
     mkdirs(os.path.join(config.common['NGINX_CHROOT'], 'var/log/nginx/'))
+
 
 @nginx_manager.command
 def render():
@@ -68,3 +69,41 @@ def stop():
         print(colored('failed', 'red', attrs=['bold']) + '.')
     else:
         print(colored('nginx', 'green', attrs=['bold']) + '.')
+
+
+@nginx_manager.command
+def reload():
+    """
+    平滑加载 nginx 的配置
+
+    """
+    print('Reloading nginx:', end=' ')
+    err = StringIO()
+    try:
+        sh.nginx('-p', CONF_DIR, '-c',
+                 os.path.join(CONF_DIR, 'nginx.conf'),
+                 '-s', 'reload', _err=err)
+    except ErrorReturnCode:
+        print(colored('failed', 'red', attrs=['bold']) + '.')
+        print(colored(err.getvalue(), attrs=['bold']), file=sys.stderr)
+    else:
+        print(colored('nginx', 'green', attrs=['bold']) + '.')
+
+
+@nginx_manager.command
+def restart():
+    print('Restarting nginx:', end=' ')
+    try:
+        sh.nginx('-p', CONF_DIR, '-c',
+                 os.path.join(CONF_DIR, 'nginx.conf'),
+                 '-s', 'stop')
+    except ErrorReturnCode:
+        pass  # ignore
+    finally:
+        try:
+            sh.nginx('-p', CONF_DIR, '-c',
+                     os.path.join(CONF_DIR, 'nginx.conf'))
+        except ErrorReturnCode:
+            print(colored('failed', 'red', attrs=['bold']) + '.')
+        else:
+            print(colored('nginx', 'green', attrs=['bold']) + '.')
