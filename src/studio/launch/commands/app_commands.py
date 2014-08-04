@@ -7,11 +7,11 @@ import sys
 import importlib
 from sh import pip
 from termcolor import colored
-from studio.frame import config
+from studio.frame.config import common as common_config
 from studio.launch.base import manager
 
 app_manager = manager.subcommand('app')
-
+VASSAL = common_config['UWSGI_EMPEROR']
 
 def _get_app(appname):
     try:
@@ -46,15 +46,16 @@ def _get_pkgs():
 
 def _get_appnames():
     pkgs = _get_pkgs()
-    return [pkg for pkg in pkgs if pkg.startswith('microsi')]
     return [pkg[6:] for pkg in pkgs if pkg.startswith('qsapp-')]
 
 
 def _mk_uwsgi_config(config):
+    conifg_d = {}
     for k, v in config.items():
-        print(k, v)
-#        if k.startswith('UWSGI_'):
-#            print(k, v)
+        if k.startswith('UWSGI_'):
+            k = k[6:].replace('_', '-')
+            conifg_d[k] = v
+    print(VASSAL)
 
 
 @app_manager.command
