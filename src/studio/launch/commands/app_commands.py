@@ -4,6 +4,7 @@ from __future__ import print_function
 
 import os
 import sys
+import json
 import importlib
 from sh import pip
 from termcolor import colored
@@ -11,7 +12,7 @@ from studio.frame.config import common as common_config
 from studio.launch.base import manager
 
 app_manager = manager.subcommand('app')
-VASSAL = common_config['UWSGI_EMPEROR']
+VASSALS = common_config['UWSGI_EMPEROR']
 
 def _get_app(appname):
     try:
@@ -50,12 +51,31 @@ def _get_appnames():
 
 
 def _mk_uwsgi_config(config):
-    conifg_d = {}
+    config_d = {}
     for k, v in config.items():
         if k.startswith('UWSGI_'):
             k = k[6:].replace('_', '-')
-            conifg_d[k] = v
-    print(VASSAL)
+            config_d[k] = v
+
+    return config_d
+ 
+
+def _register(appname, **config_d):
+    vassals_dir = VASSALS
+    try:
+        os.makedirs(vassals_dir)
+    except OSError:
+        pass
+    uwsgi_cfg = {}
+    uwsgi_cfg.setdefault('env', []).extend([
+#        'STUDIO_ENVIRON=%s' % common_config['ENVIRON'],
+        'STUDIO_APPNAME=%s' % appname])
+    uwsgi_cfg.update(config_d)
+    print('Registering app %s:' % appname, end=' ')
+    with open(os.path.join(vassals_dir,
+                           '%s.json' % appname), 'wb') as fp:
+        json.dump({'uwsgi': uwsgi_cfg}, fp)
+    print(colored('ok', 'green', attrs=['bold']) + '.')
 
 
 @app_manager.command
@@ -64,4 +84,5 @@ def add(*appnames):
     for appname in appnames:
         if appname in _names:
             app = _get_app(appname)
-            _mk_uwsgi_config(app.config)
+            config_d = _mk_uwsgi_config(app.config)
+            _register(appname, **config_d)
