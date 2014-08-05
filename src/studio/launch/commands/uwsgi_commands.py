@@ -24,8 +24,8 @@ def _uwsgi_common(*args, **kwargs):
             continue
         else:
             kwargs[key[6:].lower()] = val
-#    plugins_dir = config.common['UWSGI_PLUGINS_DIR']
     env = os.environ.copy()
+#    plugins_dir = config.common['UWSGI_PLUGINS_DIR']
 #    env['UWSGI_VASSAL_PLUGINS_DIR'] = plugins_dir
     print(kwargs)
     return uwsgi(_out=sys.stdout, _err=sys.stderr,
@@ -55,3 +55,70 @@ def start():
     else:
         _uwsgi_common(daemonize=config.common['UWSGI_LOGFILE'])
         print(colored('uWSGI', 'green', attrs=['bold']) + '.')
+
+
+@uwsgi_manager.command
+def debug():
+    pidfile = config.common['UWSGI_PIDFILE']
+    print('Debugging uWSGI:', end=' ')
+    if is_alive(pidfile):
+        print(colored('failed', 'red', attrs=['bold']) +
+              ', uWSGI is already running.')
+    else:
+        p = _uwsgi_common(catch_exceptions=True,
+                          die_on_term=True, _bg=True)
+        print(colored('uWSGI', 'green', attrs=['bold']) + '.')
+        try:
+            p.wait()
+        except KeyboardInterrupt:
+            p.terminate()
+            p.wait()
+
+
+@uwsgi_manager.command
+def reload():
+    pidfile = config.common['UWSGI_PIDFILE']
+    print('Reloading uWSGI:', end=' ')
+    try:
+        uwsgi(reload=pidfile)
+    except ErrorReturnCode:
+        print(colored('failed', 'red', attrs=['bold']) + '.')
+    else:
+        print(colored('uWSGI', 'green', attrs=['bold']) + '.')
+
+
+@uwsgi_manager.command
+def stop():
+    pidfile = config.common['UWSGI_PIDFILE']
+    print('Stopping uWSGI:', end=' ')
+    try:
+        uwsgi(stop=pidfile)
+    except ErrorReturnCode:
+        print(colored('failed', 'red', attrs=['bold']) + '.')
+    else:
+        print(colored('uWSGI', 'green', attrs=['bold']) + '.')
+
+
+@uwsgi_manager.command
+def restart():
+    pidfile = config.common['UWSGI_PIDFILE']
+    stop()
+    count = 0
+    while is_alive(pidfile):
+        print('.', end='')
+        count += 1
+    print('\b' * count)
+    start()
+
+
+@uwsgi_manager.command
+def log():
+    uwsgi_logfile = config.common['UWSGI_LOGFILE']
+    def process_output(line):
+        print(line.strip(), file=sys.stdout)
+    p = sh.tail(uwsgi_logfile, follow=True, _out=process_output)
+    try:
+        p.wait()
+    except KeyboardInterrupt:
+        print(colored('\nleave log', 'red'))
+        p.terminate()

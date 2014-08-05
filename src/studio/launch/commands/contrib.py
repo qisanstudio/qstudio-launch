@@ -50,7 +50,8 @@ def build_structure(command, dist='.', tpl='default', **kwargs):
                 dpath = Template(os.path.join(relcurdir, dname)).render(**kwargs)
                 mkdirs(dpath)
             for fname in files:
-                fpath = Template(os.path.join(relcurdir, fname.rstrip('.jinja2'))).render(**kwargs)
+                real_fname = fname[:-7] if fname.endswith('.jinja2') else fname
+                fpath = Template(os.path.join(relcurdir, real_fname)).render(**kwargs)
                 text = JENV.get_template(os.path.join(reldir, fname)).render(**kwargs)
                 writefp(fpath, text)
 

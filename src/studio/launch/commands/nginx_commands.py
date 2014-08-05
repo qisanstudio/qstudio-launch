@@ -36,6 +36,25 @@ def render():
 
 
 @nginx_manager.command
+def test():
+    """
+    测试当前的 nginx 配置是否正确
+
+    """
+    print('Testing nginx:', end=' ')
+    err = StringIO()
+    try:
+        sh.nginx('-p', CONF_DIR, '-c',
+                 os.path.join(CONF_DIR, 'nginx.conf'),
+                 '-t', _err=err)
+    except ErrorReturnCode:
+        print(colored('failed', 'red', attrs=['bold']) + '.')
+        print(colored(err.getvalue(), attrs=['bold']), file=sys.stderr)
+    else:
+        print(colored('success', 'green', attrs=['bold']) + '.')
+
+
+@nginx_manager.command
 def start():
     """
     启动 nginx 进程
@@ -43,6 +62,7 @@ def start():
     """
     print('Starting nginx:', end=' ')
     err = StringIO()
+    print(CONF_DIR)
     try:
         sh.nginx('-p', CONF_DIR, '-c',
                  os.path.join(CONF_DIR, 'nginx.conf'),

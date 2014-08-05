@@ -54,7 +54,7 @@ def _mk_uwsgi_config(config):
     config_d = {}
     for k, v in config.items():
         if k.startswith('UWSGI_'):
-            k = k[6:].replace('_', '-')
+            k = k[6:].replace('_', '-').lower()
             config_d[k] = v
 
     return config_d
