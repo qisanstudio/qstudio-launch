@@ -4,6 +4,8 @@ from __future__ import print_function
 
 import os
 import sys
+import sh
+import time
 import json
 import importlib
 from sh import pip
@@ -13,6 +15,7 @@ from studio.launch.base import manager
 
 app_manager = manager.subcommand('app')
 VASSALS = common_config['UWSGI_EMPEROR']
+
 
 def _get_app(appname):
     try:
@@ -58,7 +61,7 @@ def _mk_uwsgi_config(config):
             config_d[k] = v
 
     return config_d
- 
+
 
 def _register(appname, **config_d):
     vassals_dir = VASSALS
@@ -68,8 +71,8 @@ def _register(appname, **config_d):
         pass
     uwsgi_cfg = {}
     uwsgi_cfg.setdefault('env', []).extend([
-#        'STUDIO_ENVIRON=%s' % common_config['ENVIRON'],
-        'STUDIO_APPNAME=%s' % appname])
+                                           #        'STUDIO_ENVIRON=%s' % common_config['ENVIRON'],
+                                           'STUDIO_APPNAME=%s' % appname])
     uwsgi_cfg.update(config_d)
     print('Registering app %s:' % appname, end=' ')
     with open(os.path.join(vassals_dir,
@@ -86,3 +89,19 @@ def add(*appnames):
             app = _get_app(appname)
             config_d = _mk_uwsgi_config(app.config)
             _register(appname, **config_d)
+
+
+@app_manager.command
+def touch(*apps):
+    for appname in apps:
+        vassal = appname + '.json'
+        path = os.path.join(VASSALS, vassal)
+        if not os.path.exists(path):
+            print(colored('App %s not added, ignored.' % appname,
+                          'yellow', attrs=['bold']),
+                  file=sys.stderr)
+        else:
+            print('Touching %s:' % appname, end=' ')
+            sh.touch(path)
+            print(colored('ok', 'green', attrs=['bold']) + '.')
+            time.sleep(1)
