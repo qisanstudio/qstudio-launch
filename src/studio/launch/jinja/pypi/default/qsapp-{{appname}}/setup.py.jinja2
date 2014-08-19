@@ -30,7 +30,7 @@ def reqs(filename):
 
 setup_ext = {}
 
-if os.path.isfile('yeoman/Gruntfile.js'):
+if os.path.isfile('Gruntfile.js'):
     # 如果 Gruntfile.js 存在, 就压缩前端代码
     def grunt_build(done=[]):
         if not done:
