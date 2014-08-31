@@ -33,6 +33,7 @@ def render():
     params['NGINX_CHROOT'] = config.common['NGINX_CHROOT']
     build_structure('nginx', dist=CONF_DIR, **params)
     print(colored('render config complete!', 'green'))
+    # TODO ln -s sites-enabled/
 
 
 @nginx_manager.command
