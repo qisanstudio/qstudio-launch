@@ -5,7 +5,7 @@ from __future__ import print_function
 import os
 import sys
 import sh
-from sh import ErrorReturnCode
+from sh import sudo, ErrorReturnCode
 from StringIO import StringIO
 from termcolor import colored
 from studio.frame import config
@@ -44,7 +44,7 @@ def test():
     print('Testing nginx:', end=' ')
     err = StringIO()
     try:
-        sh.nginx('-p', CONF_DIR, '-c',
+        sudo.nginx('-p', CONF_DIR, '-c',
                  os.path.join(CONF_DIR, 'nginx.conf'),
                  '-t', _err=err)
     except ErrorReturnCode:
@@ -64,7 +64,7 @@ def start():
     err = StringIO()
     print(CONF_DIR)
     try:
-        sh.nginx('-p', CONF_DIR, '-c',
+        sudo.nginx('-p', CONF_DIR, '-c',
                  os.path.join(CONF_DIR, 'nginx.conf'),
                  _err=err)
     except ErrorReturnCode:
@@ -82,7 +82,7 @@ def stop():
     """
     print('Stopping nginx:', end=' ')
     try:
-        sh.nginx('-p', CONF_DIR, '-c',
+        sudo.nginx('-p', CONF_DIR, '-c',
                  os.path.join(CONF_DIR, 'nginx.conf'),
                  '-s', 'stop')
     except ErrorReturnCode:
@@ -100,7 +100,7 @@ def reload():
     print('Reloading nginx:', end=' ')
     err = StringIO()
     try:
-        sh.nginx('-p', CONF_DIR, '-c',
+        sudo.nginx('-p', CONF_DIR, '-c',
                  os.path.join(CONF_DIR, 'nginx.conf'),
                  '-s', 'reload', _err=err)
     except ErrorReturnCode:
@@ -114,14 +114,14 @@ def reload():
 def restart():
     print('Restarting nginx:', end=' ')
     try:
-        sh.nginx('-p', CONF_DIR, '-c',
+        sudo.nginx('-p', CONF_DIR, '-c',
                  os.path.join(CONF_DIR, 'nginx.conf'),
                  '-s', 'stop')
     except ErrorReturnCode:
         pass  # ignore
     finally:
         try:
-            sh.nginx('-p', CONF_DIR, '-c',
+            sudo.nginx('-p', CONF_DIR, '-c',
                      os.path.join(CONF_DIR, 'nginx.conf'))
         except ErrorReturnCode:
             print(colored('failed', 'red', attrs=['bold']) + '.')

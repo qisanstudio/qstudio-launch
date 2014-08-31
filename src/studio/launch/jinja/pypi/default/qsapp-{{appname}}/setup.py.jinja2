@@ -30,9 +30,9 @@ def reqs(filename):
 
 setup_ext = {}
 
-if os.path.isfile('yeoman/Gruntfile.js'):
-    # 如果 Gruntfile.js 存在, 就压缩前端代码
-    def grunt_build(done=[]):
+if os.path.isfile('gulpfile.js'):
+    # 如果 gulpfile.js 存在, 就压缩前端代码
+    def gulp_build(done=[]):
         if not done:
             if os.system('npm install '
                          '--disturl=http://dist.u.qiniudn.com '
@@ -40,17 +40,17 @@ if os.path.isfile('yeoman/Gruntfile.js'):
                 sys.exit(1)
             if os.system('bower install'):
                 sys.exit(1)
-            if os.system('grunt build'):
+            if os.system('gulp build'):
                 sys.exit(1)
             done.append(1)
 
-    def grunt_clean(done=[]):
+    def gulp_clean(done=[]):
         if not done:
             if os.system('npm install '
                          '--disturl=http://dist.u.qiniudn.com '
                          '--registry=http://r.cnpmjs.org'):
                 sys.exit(1)
-            if os.system('grunt clean'):
+            if os.system('gulp clean'):
                 sys.exit(1)
             done.append(1)
 
@@ -66,20 +66,20 @@ if os.path.isfile('yeoman/Gruntfile.js'):
     class build_ext(_build_ext):
 
         def run(self):
-            grunt_build()
+            gulp_build()
             _build_ext.run(self)
 
     class sdist(_sdist):
 
         def run(self):
-            grunt_build()
+            gulp_build()
             _sdist.run(self)
 
     class clean(_clean):
 
         def run(self):
             _clean.run(self)
-            grunt_clean()
+            gulp_clean()
 
     setup_ext = {'cmdclass': {'sdist': sdist,
                               'clean': clean,
@@ -87,7 +87,7 @@ if os.path.isfile('yeoman/Gruntfile.js'):
                               'build_ext': build_ext}}
 
 setup_params = dict(
-    name="{{ appname }}",
+    name="qsapp-{{ appname }}",
     url="http://wiki.yimiqisan.com/",
     version='1.0',
     author="qisan",
