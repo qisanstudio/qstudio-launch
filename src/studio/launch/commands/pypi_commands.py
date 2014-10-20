@@ -10,10 +10,9 @@ pypi_manager = manager.subcommand('pypi')
 
 
 @pypi_manager.command
-def init(*appnames):
+def init(appname, tpl='default'):
     print(colored('initializing app ...', 'green'))
-    for appname in appnames:
-        db_pass = appname[0] * 4
-        build_structure('pypi', appname=appname, db_pass=db_pass)
+    db_pass = appname[0] * 4
+    build_structure('pypi', tpl=tpl, appname=appname, db_pass=db_pass)
     print(colored('app initializing complete!', 'green'))
 

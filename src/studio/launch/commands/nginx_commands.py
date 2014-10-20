@@ -63,7 +63,6 @@ def start():
     """
     print('Starting nginx:', end=' ')
     err = StringIO()
-    print(CONF_DIR)
     try:
         sudo.nginx('-p', CONF_DIR, '-c',
                  os.path.join(CONF_DIR, 'nginx.conf'),

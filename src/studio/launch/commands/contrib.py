@@ -7,6 +7,8 @@ import os
 import codecs
 from termcolor import colored
 from jinja2 import Template
+from jinja2.exceptions import TemplateError
+
 from studio.launch import ROOT_PATH
 from jinja2 import Environment, FileSystemLoader
 JDIR = os.path.join(ROOT_PATH, 'jinja')
@@ -52,7 +54,10 @@ def build_structure(command, dist='.', tpl='default', **kwargs):
             for fname in files:
                 real_fname = fname[:-7] if fname.endswith('.jinja2') else fname
                 fpath = Template(os.path.join(relcurdir, real_fname)).render(**kwargs)
-                text = JENV.get_template(os.path.join(reldir, fname)).render(**kwargs)
+                try:
+                    text = JENV.get_template(os.path.join(reldir, fname)).render(**kwargs)
+                except TemplateError:
+                    text = codecs.open(os.path.join(JDIR, reldir, fname), 'r', 'utf-8').read()
                 writefp(fpath, text)
 
 

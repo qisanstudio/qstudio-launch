@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>{% block title %}{% endblock %}七三工作室</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width">
+    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+    <link rel="stylesheet" href="{{ versioning('styles/vendor.css') }}">
+    <link rel="stylesheet" href="{{ versioning('styles/main.css') }}">
+    <script src="{{ versioning('scripts/vendor.js') }}"></script>
+    <script src="{{ versioning('scripts/vendor/modernizr.js') }}"></script>
+</head>
+<body>
+    <!--[if lt IE 7]>
+        <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+    <![endif]-->
+<img src='' width="1024" height="80">
+<nav class="navbar navbar-default navbar-static-top" role="navigation">
+    <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">IEFS China</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                {% for channel in channels %}
+                <li><a href="{{ channel.url }}">{{ channel.name }}</a></li>
+                {% endfor %}
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="{{ url_for('views.index', lang='zh') }}">中文</a></li>
+                <li><a href="{{ url_for('views.index', lang='en') }}">English</a></li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+      </div>
+</nav>
+<div class="container">
+    <div class="row">
+    <div class="carousel slide" data-ride="carousel">
+      <ol class="carousel-indicators">
+        <li data-target="#carousel-example-captions" data-slide-to="0" class="active"></li>
+        <li data-target="#carousel-example-captions" data-slide-to="1" class=""></li>
+        <li data-target="#carousel-example-captions" data-slide-to="2" class=""></li>
+      </ol>
+      <div class="carousel-inner" style="height:200px;">
+        <div class="item active">
+            <img src="http://www.mylxs.net/uploadfile/20134640680521.jpg">
+          <div class="carousel-caption">
+            <h3>First slide label</h3>
+            <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
+          </div>
+        </div>
+        <div class="item">
+            <img src="http://www.xinzhou.org/uploadfile/news/uploadfile/201309/20130925113822456.jpg">
+          <div class="carousel-caption">
+            <h3>Second slide label</h3>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+          </div>
+        </div>
+        <div class="item">
+            <img src="http://images4.c-ctrip.com/target/hotel/20000/19436/7631233bfaea43ca9b714557ae79f327.jpg">
+          <div class="carousel-caption">
+            <h3>Third slide label</h3>
+            <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur.</p>
+          </div>
+        </div>
+      </div>
+      <a class="left carousel-control" href="#carousel-example-captions" role="button" data-slide="prev">
+        <span class="glyphicon glyphicon-chevron-left"></span>
+      </a>
+      <a class="right carousel-control" href="#carousel-example-captions" role="button" data-slide="next">
+        <span class="glyphicon glyphicon-chevron-right"></span>
+      </a>
+    </div>
+</div>
+    {% block body %}
+    {% endblock %}
+</div>
+    <script src="{{ versioning('scripts/plugins.js') }}"></script>
+    <script src="{{ versioning('scripts/main.js') }}"></script>
+    {% block script %}
+    {% endblock %}
+</body>
+</html>
