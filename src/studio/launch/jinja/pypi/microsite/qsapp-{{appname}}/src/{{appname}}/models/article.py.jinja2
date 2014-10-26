@@ -10,9 +10,36 @@ from sqlalchemy.ext.hybrid import hybrid_property
 
 
 __all__ = [
+    'SlideModel',
     'ArticleModel',
     'ArticleContentModel',
 ]
+
+
+class SlideModel(db.Model):
+    __tablename__ = 'slide'
+
+    id = db.Column(db.Integer(), nullable=False, primary_key=True)
+    order = db.Column(db.Integer(), nullable=False, index=True)
+    _img =  db.Column('img', db.Unicode(length=2083), index=True, nullable=False)    
+    _url = db.Column('url', db.Unicode(length=2083), index=True, nullable=False)    
+    date_created = db.Column(db.DateTime(timezone=True),
+                             nullable=False, index=True,
+                             server_default=db.func.current_timestamp())
+
+    @property
+    def url(self):
+        if self._url.startwith('http'):
+            return self._url
+
+        return 'http://' + self._url
+
+    @property
+    def img(self):
+        if self._img.startwith('http'):
+            return self._img
+
+        return 'http://' + self._img
 
 
 class ArticleModel(db.Model):
@@ -24,10 +51,10 @@ class ArticleModel(db.Model):
     title = db.Column(db.Unicode(64), nullable=False, unique=True, index=True)
 
     date_published = db.Column(db.DateTime(timezone=True),
-                            nullable=False, index=True,
-                             server_default=db.func.current_timestamp())
+                               nullable=False, index=True,
+                                server_default=db.func.current_timestamp())
     date_created = db.Column(db.DateTime(timezone=True),
-                            nullable=False, index=True,
+                             nullable=False, index=True,
                              server_default=db.func.current_timestamp())
 
     _content = db.relationship(

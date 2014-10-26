@@ -1,24 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from wtforms.widgets import TextArea
-from wtforms import TextAreaField, validators
+from wtforms import validators
 from flask.ext.admin.contrib.sqla import ModelView
 from studio.core.engines import db
 
-from {{appname}}.models import ArticleModel
-
-
-class CKTextAreaWidget(TextArea):
-
-    def __call__(self, field, **kwargs):
-        kwargs.setdefault('class_', 'ckeditor')
-        return super(CKTextAreaWidget, self).__call__(field, **kwargs)
-
-
-class CKTextAreaField(TextAreaField):
-
-    widget = CKTextAreaWidget()
+from aboutme.models import SlideModel, ArticleModel
+from .forms import CKTextAreaField
 
 
 class Article(ModelView):
@@ -52,3 +40,16 @@ class Article(ModelView):
         delattr(form, 'cid')
         delattr(form, 'date_created')
         return form
+
+
+class Slide(ModelView):
+    column_labels = {'id': 'ID',
+                     'order': '排序',
+                     'img': '图片链接',
+                     'url': '链接',
+                     'date_created': '创建时间'}
+    column_list = ['id', 'order',  'img', 'url', 'date_created']
+    column_default_sort = ('order', True)
+
+    def __init__(self, **kwargs):
+        super(Slide, self).__init__(SlideModel, db.session, **kwargs)
