@@ -110,8 +110,7 @@ class NaviModel(db.Model):
                              server_default=db.func.current_timestamp())
 
     channels = db.relationship('ChannelModel',
-                               secondary=NaviChannelModel.__table__,
-                               orderby)
+                               secondary=NaviChannelModel.__table__)
 
     def __str__(self):
         return self.name

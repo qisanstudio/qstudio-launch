@@ -48,24 +48,26 @@ class Article(ModelView):
 class Slide(ModelView):
     column_labels = {'id': 'ID',
                      'order': '排序',
-                     'img': '图片链接',
-                     'url': '链接',
+                     'title': '标题',
+                     'describe': '描述',
+                     'image': '图片链接',
+                     'link': '链接',
                      'date_created': '创建时间'}
-    column_list = ['id', 'order', 'img', 'url', 'date_created']
+    column_list = ['id', 'order', 'title', 'describe', 'image', 'link', 'date_created']
     column_default_sort = ('order', True)
     form_args = {
-        'img': {'label': '图片', 'validators': [validators.Required(),
+        'image': {'label': '图片', 'validators': [validators.Required(),
                                                validators.URL()]},
-        'url': {'label': '链接', 'validators': [validators.Required(),
+        'link': {'label': '链接', 'validators': [validators.Required(),
                                                validators.URL()]},
     }
 
-    def _show_img(self, context, model, name):
-        img = model.img.strip() if model.img else ''
-        return Markup('<img src=%s width=200 height=200 />' % img)
+    def _show_image(self, context, model, name):
+        image = model.image.strip() if model.image else ''
+        return Markup('<img src=%s width=200 height=200 />' % image)
 
     column_formatters = {
-        'img': _show_img,
+        'image': _show_image,
     }
 
     def __init__(self, **kwargs):

@@ -20,9 +20,11 @@ class SlideModel(db.Model):
     __tablename__ = 'slide'
 
     id = db.Column(db.Integer(), nullable=False, primary_key=True)
+    title = db.Column(db.Unicode(256), nullable=True, index=True)
+    describe = db.Column(db.Unicode(1024), nullable=True, index=True)
     order = db.Column(db.Integer(), nullable=False, index=True)
-    img = db.Column(db.Unicode(length=2083), index=True, nullable=False)
-    url = db.Column(db.Unicode(length=2083), index=True, nullable=False)
+    image = db.Column(db.Unicode(length=2083), nullable=False)
+    link = db.Column(db.Unicode(length=2083), nullable=True)
     date_created = db.Column(db.DateTime(timezone=True),
                              nullable=False, index=True,
                              server_default=db.func.current_timestamp())

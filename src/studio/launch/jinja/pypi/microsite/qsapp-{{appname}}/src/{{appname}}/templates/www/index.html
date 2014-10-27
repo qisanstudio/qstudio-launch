@@ -1,12 +1,36 @@
 {% extends "www/base.html" %}
 
-{% block body %}
 
+{% block head %}
+	<link rel="stylesheet" href="{{ versioning('styles/index.css') }}">
+{% endblock %}
 
+{% block banner %}
+	<div class="banner">
+    	<ul>
+    		{% for slide in slides %}
+        	<li style="width: 25%; background-image: url({{ slide.image }}); background-size: 100% 100%;">
+        		<div class="inner">
+					<h1>{{ slide.title }}</h1>
+					<p>{{ slide.describe }}</p>
+					<a class="btn" href="{{ slide.link }}">了解详情</a>
+				</div>
+        	</li>
+        	{% endfor %}
+    	</ul>
+	</div>
 {% endblock %}
 
 {% block script %}
-<script language="javascript" type="text/javascript">
-    $('.carousel').carousel({interval: 2000})
+{{ super() }}
+<script src="{{ versioning('scripts/vendor/unslider.js') }}"></script>
+<script type="text/javascript">
+	$(function() {
+    	$('.banner').unslider({
+				keys: true,
+				dots: true,
+				fluid: false
+			});
+    	});
 </script>
 {% endblock %}

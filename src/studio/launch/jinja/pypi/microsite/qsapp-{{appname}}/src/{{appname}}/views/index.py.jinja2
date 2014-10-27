@@ -3,10 +3,10 @@ from __future__ import unicode_literals
 
 import re
 from flask import request, views, render_template
-from {{appname}}.blueprints import blueprint_www
+from aboutme.blueprints import blueprint_www
 
 
-from {{appname}}.models import ChannelModel, ArticleModel
+from aboutme.models import ChannelModel, ArticleModel, SlideModel, NaviModel
 
 
 class IndexView(views.MethodView):
@@ -16,7 +16,9 @@ class IndexView(views.MethodView):
 
     def get(self):
         channels = ChannelModel.query.all()
-        return render_template('www/index.html', channels=channels)
+        slides = SlideModel.query.order_by(SlideModel.order).all()
+        navi = NaviModel.query.get(1)
+        return render_template('www/index.html', channels=channels, slides=slides, navi=navi)
 
 
 blueprint_www.add_url_rule('/', view_func=IndexView.as_view(b'index'),

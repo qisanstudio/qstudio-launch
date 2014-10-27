@@ -1,8 +1,8 @@
 """create_table
 
-Revision ID: 17bf8bacacf4
+Revision ID: e873c38c3f4
 Revises: None
-Create Date: 2014-10-25 22:01:36.210609
+Create Date: 2014-10-27 20:18:48.193275
 
 """
 
@@ -52,9 +52,11 @@ def upgrade():
     op.create_table(
         u'slide',
         sa.Column('id', sa.Integer(), nullable=False, primary_key=True),
+        sa.Column('title', sa.Unicode(256), nullable=True, index=True),
+        sa.Column('describe', sa.Unicode(1024), nullable=True, index=True),
         sa.Column('order', sa.Integer(), nullable=False, index=True),
-        sa.Column('img', sa.Unicode(length=2083), nullable=False, index=True),
-        sa.Column('url', sa.Unicode(length=2083), nullable=False, index=True),
+        sa.Column('image', sa.Unicode(length=2083), nullable=False),
+        sa.Column('link', sa.Unicode(length=2083), nullable=True),
         sa.Column('date_created', sa.DateTime(timezone=True),
                     nullable=False, index=True,
                     server_default=sa.func.current_timestamp()),

@@ -14,6 +14,8 @@
     <link rel="stylesheet" href="{{ versioning('styles/main.css') }}">
     <script src="{{ versioning('scripts/vendor.js') }}"></script>
     <script src="{{ versioning('scripts/vendor/modernizr.js') }}"></script>
+    {% block head %}
+    {% endblock %}
 </head>
 <body>
     <!--[if lt IE 7]>
@@ -38,7 +40,9 @@
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     {% block navitems %}
-                    <li class=""><a href="">首页</a></li>
+                        {% for channel in navi.channels %}
+                            <li class=""><a href="">{{ channel.name }}</a></li>
+                        {% endfor %}
                     {% endblock %}
                 </ul>
                 <ul class="nav navbar-nav navbar-right" >
