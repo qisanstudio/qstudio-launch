@@ -21,25 +21,11 @@ class SlideModel(db.Model):
 
     id = db.Column(db.Integer(), nullable=False, primary_key=True)
     order = db.Column(db.Integer(), nullable=False, index=True)
-    _img =  db.Column('img', db.Unicode(length=2083), index=True, nullable=False)    
-    _url = db.Column('url', db.Unicode(length=2083), index=True, nullable=False)    
+    img = db.Column(db.Unicode(length=2083), index=True, nullable=False)
+    url = db.Column(db.Unicode(length=2083), index=True, nullable=False)
     date_created = db.Column(db.DateTime(timezone=True),
                              nullable=False, index=True,
                              server_default=db.func.current_timestamp())
-
-    @property
-    def url(self):
-        if self._url.startwith('http'):
-            return self._url
-
-        return 'http://' + self._url
-
-    @property
-    def img(self):
-        if self._img.startwith('http'):
-            return self._img
-
-        return 'http://' + self._img
 
 
 class ArticleModel(db.Model):
@@ -47,7 +33,8 @@ class ArticleModel(db.Model):
 
     id = db.Column(db.Integer(), nullable=False, primary_key=True)
     cid = db.Column('channel_id', db.Integer(), nullable=False, index=True)
-    is_sticky = db.Column(db.Boolean(), nullable=False, server_default=sql.false())
+    is_sticky = db.Column(db.Boolean(), nullable=False,
+                                        server_default=sql.false())
     title = db.Column(db.Unicode(64), nullable=False, unique=True, index=True)
 
     date_published = db.Column(db.DateTime(timezone=True),

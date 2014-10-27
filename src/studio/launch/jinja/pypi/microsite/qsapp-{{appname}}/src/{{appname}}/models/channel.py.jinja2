@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from jinja2 import Markup
 from flask import url_for
 from studio.core.engines import db
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -14,6 +15,7 @@ __all__ = [
     'NaviModel',
 ]
 
+
 def articles_order_by():
     return [db.desc(ArticleModel.is_sticky),
             db.desc(ArticleModel.date_published)]
@@ -22,9 +24,9 @@ def articles_order_by():
 class NaviChannelModel(db.Model):
     __tablename__ = 'navi_channel'
 
-    navi_id = db.Column(db.Integer(), db.ForeignKey('navi.id'), 
+    navi_id = db.Column(db.Integer(), db.ForeignKey('navi.id'),
                         primary_key=True, index=True)
-    channel_id = db.Column(db.Integer(), db.ForeignKey('channel.id'), 
+    channel_id = db.Column(db.Integer(), db.ForeignKey('channel.id'),
                            primary_key=True, index=True)
 
 
@@ -107,7 +109,9 @@ class NaviModel(db.Model):
                              nullable=False, index=True,
                              server_default=db.func.current_timestamp())
 
-    channels = db.relationship('ChannelModel', secondary=NaviChannelModel.__table__)
+    channels = db.relationship('ChannelModel',
+                               secondary=NaviChannelModel.__table__,
+                               orderby)
 
     def __str__(self):
         return self.name
