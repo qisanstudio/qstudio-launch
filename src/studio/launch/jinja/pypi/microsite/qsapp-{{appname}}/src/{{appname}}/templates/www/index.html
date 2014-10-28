@@ -6,6 +6,7 @@
 {% endblock %}
 
 {% block banner %}
+	{% if slides %}
 	<div class="banner">
     	<ul>
     		{% for slide in slides %}
@@ -13,12 +14,13 @@
         		<div class="inner">
 					<h1>{{ slide.title }}</h1>
 					<p>{{ slide.describe }}</p>
-					<a class="btn" href="{{ slide.link }}">了解详情</a>
+					{% if slide.link %}<a class="btn" href="{{ slide.link }}">了解详情</a>{% endif %}
 				</div>
         	</li>
         	{% endfor %}
     	</ul>
 	</div>
+	{% endif %}
 {% endblock %}
 
 {% block script %}

@@ -40,17 +40,15 @@
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     {% block navitems %}
-                        {% for channel in navi.channels %}
-                            <li class=""><a href="">{{ channel.name }}</a></li>
-                        {% endfor %}
+                        {{ render_navi(1) }}
                     {% endblock %}
                 </ul>
                 <ul class="nav navbar-nav navbar-right" >
                     <li class="">
-                        <form class="navbar-form form-inline" action="" method="POST" role="search">
+                        <form class="navbar-form form-inline" action="{{ url_for('views.search', category='all') }}" role="search">
                             <div class="form-group">
                                 <div class="input-group">
-                                    <input type="search" name="serial_num" class="form-control" placeholder="频道 文章">
+                                    <input type="search" name="kw" class="form-control" placeholder="频道 文章">
                                     <span class="input-group-btn">
                                         <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
                                     </span>

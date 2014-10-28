@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-import re
 from flask import request, views, render_template
 from flask.ext.paginate import Pagination
-from {{appname}}.blueprints import blueprint_www
+from aboutme.blueprints import blueprint_www
 
 
-from {{appname}}.models import ChannelModel
+from aboutme.models import ChannelModel
 
 
 article_per_page = 10
+
 
 class ChannelView(views.MethodView):
     '''
@@ -36,5 +36,6 @@ class ChannelView(views.MethodView):
                                 pager=pager)
 
 
-blueprint_www.add_url_rule('/channel/<int:cid>/', view_func=ChannelView.as_view(b'channel'),
-                                endpoint='channel', methods=['GET'])
+blueprint_www.add_url_rule('/channel/<int:cid>/',
+                            view_func=ChannelView.as_view(b'channel'),
+                            endpoint='channel', methods=['GET'])
