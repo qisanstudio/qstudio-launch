@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from flask import render_template_string
 from jinja2 import Markup
-from aboutme.models import NaviModel
+from ..models import NaviModel
 
 
 navi_str = '''

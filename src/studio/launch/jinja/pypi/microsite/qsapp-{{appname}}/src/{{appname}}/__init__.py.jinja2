@@ -10,11 +10,11 @@ app = StudioFlask(__name__)
 Babel(app=app, default_locale='zh')
 
 with app.app_context():
-    from aboutme.contrib import helpers
+    from {{appname}}.contrib import helpers
     app.jinja_env.globals.update(render_navi=helpers.render_navi)
-    from aboutme import views
-    from aboutme.panel import admin
-    from aboutme.blueprints import blueprint_www
+    from {{appname}} import views
+    from {{appname}}.panel import admin
+    from {{appname}}.blueprints import blueprint_www
     admin.init_app(app)
     assert views
 
