@@ -5,7 +5,7 @@ from __future__ import print_function
 import os
 import sys
 import sh
-from sh import sudo, ErrorReturnCode
+from sh import ErrorReturnCode
 from StringIO import StringIO
 from termcolor import colored
 from studio.frame import config
@@ -13,9 +13,8 @@ from studio.launch.base import manager
 from .contrib import mkdirs, build_structure
 
 
-CONF_DIR = os.path.join(config.common['NGINX_CHROOT'], 'etc/nginx')
+CONF_DIR = os.path.join(config.common['NGINX_CHROOT'], 'etc/nginx/')
 nginx_manager = manager.subcommand('nginx')
-
 
 def _init_nginx():
     mkdirs(CONF_DIR)
@@ -45,7 +44,7 @@ def test():
     print('Testing nginx:', end=' ')
     err = StringIO()
     try:
-        sudo.nginx('-p', CONF_DIR, '-c',
+        sh.nginx('-p', CONF_DIR, '-c',
                  os.path.join(CONF_DIR, 'nginx.conf'),
                  '-t', _err=err)
     except ErrorReturnCode:
@@ -64,7 +63,7 @@ def start():
     print('Starting nginx:', end=' ')
     err = StringIO()
     try:
-        sudo.nginx('-p', CONF_DIR, '-c',
+        sh.nginx('-p', CONF_DIR, '-c',
                  os.path.join(CONF_DIR, 'nginx.conf'),
                  _err=err)
     except ErrorReturnCode:
@@ -82,7 +81,7 @@ def stop():
     """
     print('Stopping nginx:', end=' ')
     try:
-        sudo.nginx('-p', CONF_DIR, '-c',
+        sh.nginx('-p', CONF_DIR, '-c',
                  os.path.join(CONF_DIR, 'nginx.conf'),
                  '-s', 'stop')
     except ErrorReturnCode:
@@ -100,7 +99,7 @@ def reload():
     print('Reloading nginx:', end=' ')
     err = StringIO()
     try:
-        sudo.nginx('-p', CONF_DIR, '-c',
+        sh.nginx('-p', CONF_DIR, '-c',
                  os.path.join(CONF_DIR, 'nginx.conf'),
                  '-s', 'reload', _err=err)
     except ErrorReturnCode:
@@ -114,14 +113,14 @@ def reload():
 def restart():
     print('Restarting nginx:', end=' ')
     try:
-        sudo.nginx('-p', CONF_DIR, '-c',
+        sh.nginx('-p', CONF_DIR, '-c',
                  os.path.join(CONF_DIR, 'nginx.conf'),
                  '-s', 'stop')
     except ErrorReturnCode:
         pass  # ignore
     finally:
         try:
-            sudo.nginx('-p', CONF_DIR, '-c',
+            sh.nginx('-p', CONF_DIR, '-c',
                      os.path.join(CONF_DIR, 'nginx.conf'))
         except ErrorReturnCode:
             print(colored('failed', 'red', attrs=['bold']) + '.')
