@@ -50,6 +50,7 @@ def _get_pkgs():
 
 def _get_appnames():
     pkgs = _get_pkgs()
+    print(pkgs)
     return [pkg[6:] for pkg in pkgs if pkg.startswith('qsapp-')]
 
 

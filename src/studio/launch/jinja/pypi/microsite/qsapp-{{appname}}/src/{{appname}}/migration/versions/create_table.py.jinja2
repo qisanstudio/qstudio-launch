@@ -65,7 +65,7 @@ def upgrade():
     op.create_table(
         u'article',
         sa.Column('id', sa.Integer(), nullable=False, primary_key=True),
-        sa.Column('channel_id', sa.ForeignKey('channel.id'), sa.Integer(), nullable=False, index=True),
+        sa.Column('channel_id', sa.Integer(), nullable=False, index=True),
         sa.Column('is_sticky', sa.Boolean(),
                     server_default=sql.false(), nullable=False),
         sa.Column('title', sa.Unicode(64), nullable=False, unique=True, index=True),
