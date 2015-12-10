@@ -5,7 +5,7 @@ from __future__ import print_function
 import os
 import sys
 import sh
-from sh import ErrorReturnCode
+from sh import sudo, ErrorReturnCode
 from StringIO import StringIO
 from termcolor import colored
 from studio.frame import config
@@ -15,6 +15,7 @@ from .contrib import mkdirs, build_structure
 
 CONF_DIR = os.path.join(config.common['NGINX_CHROOT'], 'etc/nginx/')
 nginx_manager = manager.subcommand('nginx')
+
 
 def _init_nginx():
     mkdirs(CONF_DIR)
@@ -44,9 +45,9 @@ def test():
     print('Testing nginx:', end=' ')
     err = StringIO()
     try:
-        sh.nginx('-p', CONF_DIR, '-c',
-                 os.path.join(CONF_DIR, 'nginx.conf'),
-                 '-t', _err=err)
+        sudo.nginx('-p', CONF_DIR, '-c',
+                   os.path.join(CONF_DIR, 'nginx.conf'),
+                   '-t', _err=err)
     except ErrorReturnCode:
         print(colored('failed', 'red', attrs=['bold']) + '.')
         print(colored(err.getvalue(), attrs=['bold']), file=sys.stderr)
@@ -63,9 +64,9 @@ def start():
     print('Starting nginx:', end=' ')
     err = StringIO()
     try:
-        sh.nginx('-p', CONF_DIR, '-c',
-                 os.path.join(CONF_DIR, 'nginx.conf'),
-                 _err=err)
+        sudo.nginx('-p', CONF_DIR, '-c',
+                   os.path.join(CONF_DIR, 'nginx.conf'),
+                   _err=err)
     except ErrorReturnCode:
         print(colored('failed', 'red', attrs=['bold']) + '.')
         print(colored(err.getvalue(), attrs=['bold']), file=sys.stderr)
@@ -81,9 +82,9 @@ def stop():
     """
     print('Stopping nginx:', end=' ')
     try:
-        sh.nginx('-p', CONF_DIR, '-c',
-                 os.path.join(CONF_DIR, 'nginx.conf'),
-                 '-s', 'stop')
+        sudo.nginx('-p', CONF_DIR, '-c',
+                   os.path.join(CONF_DIR, 'nginx.conf'),
+                   '-s', 'stop')
     except ErrorReturnCode:
         print(colored('failed', 'red', attrs=['bold']) + '.')
     else:
@@ -99,9 +100,9 @@ def reload():
     print('Reloading nginx:', end=' ')
     err = StringIO()
     try:
-        sh.nginx('-p', CONF_DIR, '-c',
-                 os.path.join(CONF_DIR, 'nginx.conf'),
-                 '-s', 'reload', _err=err)
+        sudo.nginx('-p', CONF_DIR, '-c',
+                   os.path.join(CONF_DIR, 'nginx.conf'),
+                   '-s', 'reload', _err=err)
     except ErrorReturnCode:
         print(colored('failed', 'red', attrs=['bold']) + '.')
         print(colored(err.getvalue(), attrs=['bold']), file=sys.stderr)
@@ -113,9 +114,9 @@ def reload():
 def restart():
     print('Restarting nginx:', end=' ')
     try:
-        sh.nginx('-p', CONF_DIR, '-c',
-                 os.path.join(CONF_DIR, 'nginx.conf'),
-                 '-s', 'stop')
+        sudo.nginx('-p', CONF_DIR, '-c',
+                   os.path.join(CONF_DIR, 'nginx.conf'),
+                   '-s', 'stop')
     except ErrorReturnCode:
         pass  # ignore
     finally:
