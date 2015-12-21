@@ -1,0 +1,210 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
+from flask.ext.login import login_user, current_user, logout_user, login_required
+from flask import views, render_template, url_for, redirect, abort, flash
+from studio.core.engines import db
+
+from {{ appname }}.blueprints import blueprint_www
+from {{ appname }}.models import AccountModel
+from {{ appname }}.contrib.security import ts
+from {{ appname }}.contrib.helpers import send_email, flash_errors
+from .forms import SignupForm, LoginForm, EmailForm, PasswordForm
+
+from .. import app
+
+
+class LoginView(views.MethodView):
+    '''
+        用户登录
+    '''
+
+    def get(self):
+        form = LoginForm()
+        return render_template('www/login.html', form=form)
+
+    def post(self):
+        form = LoginForm()
+        if form.validate_on_submit():
+            account = (AccountModel.query
+                                   .filter_by(email=form.email.data)
+                                   .first_or_404())
+            if account.is_correct_password(form.password.data):
+                login_user(account)
+                return redirect(url_for(".index"))
+            else:
+                flash('密码不正确')
+        else:
+            flash_errors(form)
+
+        return render_template('www/login.html', form=form)
+
+
+blueprint_www.add_url_rule('/login',
+                           view_func=LoginView.as_view(b'login'),
+                           endpoint='login',
+                           methods=['GET', 'POST'])
+
+
+class LogoutView(views.MethodView):
+    '''
+        用户退出
+    '''
+
+    @login_required
+    def get(self):
+        logout_user()
+        return redirect(url_for('views.index'))
+
+
+blueprint_www.add_url_rule('/logout',
+                           view_func=LogoutView.as_view(b'logout'),
+                           endpoint='logout',
+                           methods=['GET'])
+
+
+class RegisterView(views.MethodView):
+    '''
+        注册用户
+    '''
+
+    def _send_mail(self, email):
+        subject = u'点击链接完成注册'
+        token = ts.dumps(email, salt=app.config["MAIL_CONFIRM_SALT"])
+        confirm_url = url_for('views.confirm_email',
+                              token=token,
+                              _external=True)
+        html = render_template('static/email_confirm.html',
+                               confirm_url=confirm_url)
+        send_email(email, subject, html)
+
+    def get(self):
+        form = SignupForm()
+        return render_template('www/register.html', form=form)
+
+    def post(self):
+        form = SignupForm()
+        if form.validate_on_submit():
+            account = AccountModel(email=form.email.data,
+                                   password=form.password.data)
+            db.session.add(account)
+            db.session.commit()
+
+            self._send_mail(account.email)
+            return redirect(url_for(".index"))
+        else:
+            flash_errors(form)
+
+        return render_template('www/register.html', form=form)
+
+
+blueprint_www.add_url_rule('/register',
+                           view_func=RegisterView.as_view(b'register'),
+                           endpoint='register',
+                           methods=['GET', 'POST'])
+
+
+class ConfirmView(views.MethodView):
+    '''
+        邮件确认
+    '''
+    def get(self, token):
+        try:
+            email = ts.loads(token,
+                             salt=app.config["MAIL_CONFIRM_SALT"],
+                             max_age=app.config["MAIL_CONFIRM_MAX_AGE"])
+        except:
+            abort(404)
+
+        account = AccountModel.query.filter_by(email=email).first_or_404()
+        account.is_email_confirmed = True
+        db.session.commit()
+
+        return redirect(url_for('views.login'))
+
+
+blueprint_www.add_url_rule('/confirm/<token>',
+                           view_func=ConfirmView.as_view(b'confirm_email'),
+                           endpoint='confirm_email',
+                           methods=['GET'])
+
+
+class ForgetPasswordView(views.MethodView):
+    '''
+        忘记密码
+    '''
+
+    def _send_mail(self, email):
+        subject = u'密码重置请求'
+        token = ts.dumps(email, salt=app.config["MAIL_RESET_SALT"])
+        recover_url = url_for('views.reset_with_token',
+                              token=token,
+                              _external=True)
+        html = render_template('static/recover.html',
+                               recover_url=recover_url)
+        send_email(email, subject, html)
+
+    def get(self):
+        form = EmailForm()
+        return render_template('www/forget_password.html', form=form)
+
+    def post(self):
+        form = EmailForm()
+        if form.validate_on_submit():
+            self._send_mail(form.email.data)
+            return redirect(url_for('views.index'))
+        else:
+            flash_errors(form)
+
+        return render_template('www/forget_password.html', form=form)
+
+
+blueprint_www.add_url_rule('/forget',
+                           view_func=ForgetPasswordView.as_view(b'forget_password'),
+                           endpoint='forget_password',
+                           methods=['GET', 'POST'])
+
+
+class ResetWithTokenView(views.MethodView):
+    '''
+        密码重置
+    '''
+    def get(self, token):
+        try:
+            ts.loads(token,
+                     salt=app.config["MAIL_RESET_SALT"],
+                     max_age=app.config["MAIL_RESET_MAX_AGE"])
+        except:
+            print 'sfsdfsfsfd'
+            abort(404)
+        form = PasswordForm()
+
+        return render_template('www/reset_with_token.html',
+                               form=form,
+                               token=token)
+
+    def post(self, token):
+        try:
+            email = ts.loads(token,
+                             salt=app.config["MAIL_RESET_SALT"],
+                             max_age=app.config["MAIL_RESET_MAX_AGE"])
+        except:
+            abort(404)
+        form = PasswordForm()
+        if form.validate_on_submit():
+            account = AccountModel.query.filter_by(email=email).first_or_404()
+            account.password = form.password.data
+            db.session.commit()
+            return redirect(url_for('views.login'))
+        else:
+            flash_errors(form)
+
+        return render_template('www/reset_with_token.html',
+                               form=form,
+                               token=token)
+
+
+blueprint_www.add_url_rule('/reset/<token>',
+                           view_func=ResetWithTokenView.as_view(b'reset_with_token'),
+                           endpoint='reset_with_token',
+                           methods=['GET', 'POST'])

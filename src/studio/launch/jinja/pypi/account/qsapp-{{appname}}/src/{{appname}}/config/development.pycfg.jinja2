@@ -5,22 +5,22 @@ from __future__ import unicode_literals
 DEBUG = True
 SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://{{ appname }}:{{ db_pass }}@localhost/{{ appname }}'
 
-#SERVER_NAME = 'www.{{ appname }}.com:18000'
+#SERVER_NAME = 'dev.{{ appname }}.com:18000'
 
-UWSGI_SOCKET = '0.0.0.0:17003'
+UWSGI_SOCKET = '0.0.0.0:{{ socket_port }}'
 UWSGI_MODULE  = '{{ appname }}:app'
 
 BCRYPT_LOG_ROUNDS = 10
 
 SECRET_KEY = '71f09bb707fd4adeb95e7472cc5f4362'
 
-MAIL_SERVER = 'smtp.exmail.qq.com'
+MAIL_SERVER = '{{ mail_server }}'
 MAIL_PORT = 465
 MAIL_USE_TLS = False
 MAIL_USE_SSL = True
-MAIL_USERNAME = 'admin@{{ appname }}.org'
-MAIL_PASSWORD = ''
-MAIL_DEFAULT_SENDER = ('管理员', 'admin@{{ appname }}.org')
+MAIL_USERNAME = 'admin@{{ appname }}.com'
+MAIL_PASSWORD = 'l$a@bw11z@memivj'
+MAIL_DEFAULT_SENDER = ('管理员', 'admin@{{ appname }}.com')
 MAIL_CONFIRM_SALT = 'email-confirm-key'
 MAIL_CONFIRM_MAX_AGE = 86400
 MAIL_RESET_SALT = 'recover-key'

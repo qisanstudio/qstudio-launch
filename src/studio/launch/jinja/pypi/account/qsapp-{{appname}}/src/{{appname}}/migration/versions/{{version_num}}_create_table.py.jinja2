@@ -1,0 +1,174 @@
+#! -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
+"""create_table
+
+Revision ID: {{ version_num }}
+Revises: None
+Create Date: 2014-10-27 20:18:48.193275
+
+"""
+
+# revision identifiers, used by Alembic.
+revision = '{{ version_num }}'
+down_revision = None
+
+
+from alembic import op
+import sqlalchemy as sa
+from sqlalchemy import sql
+from sqlalchemy.sql import table
+from flask.ext.bcrypt import generate_password_hash
+from studio.core.sqla.types import JSONType
+
+
+role_tuple = ('role',
+        sa.Column('id', sa.Integer(), nullable=False),
+        sa.Column('name', sa.String(length=80), nullable=False),
+        sa.Column('description', sa.String(length=255), nullable=True),
+    )
+
+
+account_tuple = ('account',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('nickname', sa.Unicode(length=256), nullable=True),
+    sa.Column('email', sa.Unicode(length=1024), nullable=True),
+    sa.Column('is_email_confirmed', sa.Boolean(), server_default='false', nullable=False),
+    sa.Column('password', sa.String(length=128), nullable=False),
+    sa.Column('info', JSONType(), nullable=True),
+    sa.Column('date_created', sa.DateTime(timezone=True), server_default=sa.func.current_timestamp(), nullable=False),
+)
+
+
+roles_accounts_tuple = ('roles_accounts',
+    sa.Column('account_id', sa.Integer(), nullable=True),
+    sa.Column('role_id', sa.Integer(), nullable=True),
+)
+
+
+def _create_seed_data():
+    op.bulk_insert(table(*role_tuple),
+        [
+            {'id': 1, 'name': 'superadmin', 'description': '超级管理员'},
+            {'id': 2, 'name': 'admin', 'description': '管理员'},
+        ]
+    )
+    op.bulk_insert(table(*account_tuple),
+        [
+            {'id': 1, 'nickname': '{{ admin_nickname }}',
+             'email': '{{ admin_email }}',
+             'is_email_confirmed': True,
+             'password': generate_password_hash('{{ admin_password }}')},
+        ]
+    )
+    op.bulk_insert(table(*roles_accounts_tuple),
+        [
+            {'account_id': 1, 'role_id': 1},
+            {'account_id': 1, 'role_id': 2},
+        ]
+    )
+
+
+def upgrade():
+    op.create_table(
+        u'navi',
+        sa.Column('id', sa.Integer(), nullable=False, primary_key=True),
+        sa.Column('name', sa.Unicode(64), nullable=False, unique=True, index=True),
+        sa.Column('date_created', sa.DateTime(timezone=True),
+                    nullable=False, index=True,
+                    server_default=sa.func.current_timestamp()),
+    )
+
+    op.create_table(
+        u'channel',
+        sa.Column('id', sa.Integer(), nullable=False, primary_key=True),
+        sa.Column('parent_id', sa.Integer(), sa.ForeignKey('channel.id'), index=True),
+        sa.Column('name', sa.Unicode(64), nullable=False, unique=True, index=True),
+        sa.Column('date_created', sa.DateTime(timezone=True),
+                    nullable=False, index=True,
+                    server_default=sa.func.current_timestamp()),
+    )
+
+    op.create_table(
+        u'navi_channel',
+        sa.Column('navi_id', sa.Integer(), sa.ForeignKey('navi.id'), primary_key=True, index=True),
+        sa.Column('channel_id', sa.Integer(), sa.ForeignKey('channel.id'), primary_key=True, index=True),
+    )
+
+    op.create_table(
+        u'channel_summary',
+        sa.Column('id', sa.Integer(), sa.ForeignKey('channel.id'),
+                  nullable=False, primary_key=True),
+        sa.Column('content', sa.UnicodeText(), nullable=False),
+    )
+
+    op.create_table(
+        u'slide',
+        sa.Column('id', sa.Integer(), nullable=False, primary_key=True),
+        sa.Column('title', sa.Unicode(256), nullable=True, index=True),
+        sa.Column('describe', sa.Unicode(1024), nullable=True, index=True),
+        sa.Column('order', sa.Integer(), nullable=False, index=True),
+        sa.Column('image', sa.Unicode(length=2083), nullable=False),
+        sa.Column('link', sa.Unicode(length=2083), nullable=True),
+        sa.Column('date_created', sa.DateTime(timezone=True),
+                    nullable=False, index=True,
+                    server_default=sa.func.current_timestamp()),
+    )
+
+    op.create_table(
+        u'article',
+        sa.Column('id', sa.Integer(), nullable=False, primary_key=True),
+        sa.Column('channel_id', sa.Integer(), nullable=False, index=True),
+        sa.Column('is_sticky', sa.Boolean(),
+                    server_default=sql.false(), nullable=False),
+        sa.Column('title', sa.Unicode(64), nullable=False, unique=True, index=True),
+        sa.Column('date_published', sa.DateTime(timezone=True),
+                    nullable=False, index=True,
+                    server_default=sa.func.current_timestamp()),
+        sa.Column('date_created', sa.DateTime(timezone=True),
+                    nullable=False, index=True,
+                    server_default=sa.func.current_timestamp()),
+    )
+
+    op.create_table(
+        u'article_content',
+        sa.Column('id', sa.Integer(), sa.ForeignKey('article.id'),
+                    nullable=False, primary_key=True),
+        sa.Column('content', sa.UnicodeText(), nullable=False),
+    )
+    # create role table
+    op.create_table(*role_tuple)
+    op.create_primary_key('role_pkey', 'role', ['id'])
+    op.create_unique_constraint("uq_role_name", "role", ["name"])
+    # create account table
+    op.create_table(*account_tuple)
+    op.create_primary_key('account_pkey', 'account', ['id'])
+    op.create_unique_constraint("uq_account_ninckname", "account", ["nickname"])
+    op.create_unique_constraint("uq_account_name", "account", ["email"])
+    op.create_index(op.f('ix_account_date_created'), 'account', ['date_created'], unique=False)
+    op.create_index(op.f('ix_account_email'), 'account', ['email'], unique=False)
+    # create account_role table
+    op.create_table(*roles_accounts_tuple)
+    op.create_foreign_key('fk_roles_accounts_account_id',
+                          'roles_accounts', 'account',
+                          ['account_id'], ['id'])
+    op.create_foreign_key('fk_roles_accounts_role_id',
+                          'roles_accounts', 'role',
+                          ['role_id'], ['id'])
+    _create_seed_data()
+
+
+def downgrade():
+    op.drop_table('roles_accounts')
+    op.drop_index(op.f('ix_account_email'), table_name='account')
+    op.drop_index(op.f('ix_account_date_created'), table_name='account')
+    op.drop_table('account')
+    op.drop_table('role')
+    op.drop_table(u'article_content')
+    op.drop_table(u'article')
+    op.drop_table(u'slide')
+    op.drop_table(u'channel_summary')
+    op.drop_table(u'navi_channel')
+    op.drop_table(u'channel')
+    op.drop_table(u'navi')

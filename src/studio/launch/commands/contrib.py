@@ -31,7 +31,7 @@ class cd(object):
 
 def mkdirs(path):
     try:
-        print(colored('create directory %s' % path, 'grey'))
+        print(colored('create directory %s' % path, 'blue'))
         os.makedirs(path)
     except OSError:
         pass
@@ -39,7 +39,7 @@ def mkdirs(path):
 
 def writefp(path, text):
     with codecs.open(path, 'wb', 'utf-8') as fp:
-        print(colored('create file %s' % path, 'grey'))
+        print(colored('create file %s' % path, 'white'))
         fp.write(text)
 
 
@@ -59,7 +59,7 @@ def build_structure(command, dist='.', tpl='default', **kwargs):
                                               real_fname)).render(**kwargs)
                 if fname.endswith('.jinja2'):
                     text = JENV.get_template(os.path.join(reldir,
-                                                    fname)).render(**kwargs)
+                                                          fname)).render(**kwargs)
                     writefp(fpath, text)
                 else:
                     shutil.copyfile(os.path.join(JDIR, reldir, fname), fpath)

@@ -1,0 +1,38 @@
+{% extends "www/base.html" %}
+
+
+{% block head %}
+	<link rel="stylesheet" href="{{ versioning('styles/index.css') }}">
+{% endblock %}
+
+{% block banner %}
+	{% if slides %}
+	<div class="banner">
+    	<ul>
+    		{% for slide in slides %}
+        	<li style="width: 25%; background-image: url({{ slide.image }}); background-size: 100% 100%;">
+        		<div class="inner">
+					<h1>{{ slide.title }}</h1>
+					<p>{{ slide.describe }}</p>
+					{% if slide.link %}<a class="btn" href="{{ slide.link }}">了解详情</a>{% endif %}
+				</div>
+        	</li>
+        	{% endfor %}
+    	</ul>
+	</div>
+	{% endif %}
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+<script src="{{ versioning('scripts/vendor/unslider.js') }}"></script>
+<script type="text/javascript">
+	$(function() {
+    	$('.banner').unslider({
+				keys: true,
+				dots: true,
+				fluid: false
+			});
+    	});
+</script>
+{% endblock %}
