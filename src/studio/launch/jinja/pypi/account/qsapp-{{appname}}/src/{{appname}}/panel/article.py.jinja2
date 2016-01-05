@@ -5,6 +5,8 @@ from wtforms import validators
 from jinja2 import Markup
 from studio.core.engines import db
 
+from {{appname}}.contrib.fields import ImageUploadField
+from {{appname}}.contrib.image import thumbnail
 from {{appname}}.models import SlideModel, ArticleModel
 from .base import BaseView
 from .forms import CKTextAreaField
@@ -51,21 +53,28 @@ class Slide(BaseView):
                      'image': '图片链接',
                      'link': '链接',
                      'date_created': '创建时间'}
-    column_list = ['id', 'order', 'title', 'describe', 'image', 'link', 'date_created']
+    column_list = ['id', 'order', 'title', 'describe',
+                   'image', 'link', 'date_created']
     column_default_sort = ('order', True)
     form_args = {
         'image': {'label': '图片', 'validators': [validators.Required(),
-                                               validators.URL()]},
+                                                 validators.URL()]},
         'link': {'label': '链接', 'validators': [validators.Required(),
-                                               validators.URL()]},
+                                                validators.URL()]},
     }
 
     def _show_image(self, context, model, name):
         image = model.image.strip() if model.image else ''
-        return Markup('<img src=%s width=200 height=200 />' % image)
+        origin_url = thumbnail(image)
+        url = thumbnail(image, width=200, height=200)
+        return Markup('<a href="%s" target="_blank"><img src="%s" /></a>' % (origin_url, url))
 
     column_formatters = {
         'image': _show_image,
+    }
+
+    form_extra_fields = {
+        'image': ImageUploadField('图片上传')
     }
 
     def __init__(self, **kwargs):

@@ -1,0 +1,49 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
+from jinja2 import Markup
+from studio.core.engines import db
+from {{appname}}.models import ImageModel
+from {{appname}}.contrib.fields import ImageUploadField
+from {{appname}}.contrib.image import thumbnail
+
+from .base import BaseView
+
+
+class Image(BaseView):
+
+    column_labels = {'id': 'ID',
+                     'hashkey': '缩略图',
+                     'date_created': '创建时间'}
+    column_list = ['id', 'hashkey', 'date_created']
+
+    def _list_thumbnail(view, context, model, name):
+        if not model.hashkey:
+            return ''
+        origin_url = thumbnail(model.hashkey)
+        url = thumbnail(model.hashkey, width=200, height=200)
+        return Markup('<a href="%s" target="_blank"><img src="%s" /></a>' % (origin_url, url))
+
+    column_formatters = {
+        'hashkey': _list_thumbnail
+    }
+
+    form_extra_fields = {
+        'hashkey': ImageUploadField('图片上传')
+    }
+
+    def __init__(self, **kwargs):
+        super(Image, self).__init__(ImageModel, db.session, **kwargs)
+
+    def create_form(self, obj=None):
+        form = super(Image, self).create_form()
+        delattr(form, 'date_created')
+        return form
+
+    def edit_form(self, obj=None):
+        form = super(Image, self).edit_form(obj=obj)
+        delattr(form, 'date_created')
+        return form
+
+    def create_model(self, form):
+        return super(Image, self).create_model(form)

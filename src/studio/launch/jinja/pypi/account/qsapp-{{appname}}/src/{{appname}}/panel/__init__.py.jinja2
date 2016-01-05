@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from .account import Account, Role
 from .channel import Navi, Channel
 from .article import Slide, Article
+from .image import Image
 
 from flask.ext.admin import Admin
 
@@ -23,3 +24,7 @@ admin.add_view(Channel(name='频道项', category='频道管理', endpoint='chan
 # 文章管理
 admin.add_view(Slide(name='幻灯片', category='文章管理', endpoint='slide'))
 admin.add_view(Article(name='文章', category='文章管理', endpoint='article'))
+
+
+# 图片管理
+admin.add_view(Image(name='图片管理', category='图片管理', endpoint='image'))

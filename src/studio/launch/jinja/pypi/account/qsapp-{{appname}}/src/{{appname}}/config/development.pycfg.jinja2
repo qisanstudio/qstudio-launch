@@ -19,9 +19,18 @@ MAIL_PORT = 465
 MAIL_USE_TLS = False
 MAIL_USE_SSL = True
 MAIL_USERNAME = 'admin@{{ appname }}.com'
-MAIL_PASSWORD = 'l$a@bw11z@memivj'
+MAIL_PASSWORD = ''
 MAIL_DEFAULT_SENDER = ('管理员', 'admin@{{ appname }}.com')
 MAIL_CONFIRM_SALT = 'email-confirm-key'
 MAIL_CONFIRM_MAX_AGE = 86400
 MAIL_RESET_SALT = 'recover-key'
 MAIL_RESET_MAX_AGE = 86400
+
+QINIU_ACCESS_KEY = b'DG7M1lmDLROw1n6fe2AjQJNJWh9sH_8keA6retp5'
+QINIU_SECRET_KEY = b'lbrwgGdyNTwFHR_U6mf2FZWBkSz9pJ_KSN3IPA84'
+QINIU_IMAGE_BUCKET = 'image-guokr'
+QINIU_DOMAINS = [
+    '1.im.guokr.com',
+    '2.im.guokr.com',
+    '3.im.guokr.com',
+]
